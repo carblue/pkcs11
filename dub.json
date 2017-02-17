@@ -21,6 +21,15 @@
 			"dependencies": {
 				"derelict-util": "~>3.0.0-alpha.1"
 			}
+		},
+		{
+			"name": "unittest",
+			"targetType": "library",
+			"sourcePaths": ["deimos"],
+			"versions" : ["PKCS11_DYNAMIC_BINDING_ONE"],
+			"dependencies": {
+				"derelict-util": "~>3.0.0-alpha.1"
+			}
 		}
 	]
 }
