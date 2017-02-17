@@ -1,0 +1,16 @@
+OASIS Standard Incorporating Approved Errata 01
+
+13 May 2016
+
+Specification URIs
+
+
+·         Normative computer language definition files for PKCS #11 v2.40:
+
+     http://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/errata01/os/include/pkcs11-v2.40/
+
+o    http://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/errata01/os/include/pkcs11-v2.40/pkcs11.h
+
+o    http://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/errata01/os/include/pkcs11-v2.40/pkcs11t.h
+
+o    http://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/errata01/os/include/pkcs11-v2.40/pkcs11f.h
