@@ -1,4 +1,6 @@
-/* Copyright (c) OASIS Open 2016. All Rights Reserved./
+/* pkcs11.h
+ * Copyright (c) OASIS Open 2016. All Rights Reserved./
+ * Copyright (C) 2017  for the binding: Carsten Blüggel <carblue@geekmail.de>
  * /Distributed under the terms of the OASIS IPR Policy,
  * [http://www.oasis-open.org/policies-guidelines/ipr], AS-IS, WITHOUT ANY
  * IMPLIED OR EXPRESS WARRANTY; there is no warranty of MERCHANTABILITY, FITNESS FOR A
@@ -8,258 +10,161 @@
 /* Latest version of the specification:
  * http://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/pkcs11-base-v2.40.html
  */
-
-#ifndef _PKCS11_H_
+/*
+Written in the D programming language.
+See also https://github.com/jpf91/systemd/wiki/Deimos-git-branch-structure
+For git maintenance (ensure at least one congruent line with originating C header):
 #define _PKCS11_H_ 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+Different from the C source which unrolls all #include of pkcs11t.h and pkcs11f.h in pkcs11.h,
+the extern function decls ("extern" form of all the entry points) and
+function pointer decls (typedef form of all the entry points) from pkcs11f.h are in pkcs11f.d,
+the struct CK_FUNCTION_LIST is in pkcs11t.d as well as all content from pkcs11t.h.
+*/
 
-/* Before including this file (pkcs11.h) (or pkcs11t.h by
- * itself), 5 platform-specific macros must be defined.  These
- * macros are described below, and typical definitions for them
- * are also given.  Be advised that these definitions can depend
- * on both the platform and the compiler used (and possibly also
- * on whether a Cryptoki library is linked statically or
- * dynamically).
- *
- * In addition to defining these 5 macros, the packing convention
- * for Cryptoki structures should be set.  The Cryptoki
- * convention on packing is that structures should be 1-byte
- * aligned.
- *
- * If you're using Microsoft Developer Studio 5.0 to produce
- * Win32 stuff, this might be done by using the following
- * preprocessor directive before including pkcs11.h or pkcs11t.h:
- *
- * #pragma pack(push, cryptoki, 1)
- *
- * and using the following preprocessor directive after including
- * pkcs11.h or pkcs11t.h:
- *
- * #pragma pack(pop, cryptoki)
- *
- * If you're using an earlier version of Microsoft Developer
- * Studio to produce Win16 stuff, this might be done by using
- * the following preprocessor directive before including
- * pkcs11.h or pkcs11t.h:
- *
- * #pragma pack(1)
- *
- * In a UNIX environment, you're on your own for this.  You might
- * not need to do (or be able to do!) anything.
- *
- *
- * Now for the macros:
- *
- *
- * 1. CK_PTR: The indirection string for making a pointer to an
- * object.  It can be used like this:
- *
- * typedef CK_BYTE CK_PTR CK_BYTE_PTR;
- *
- * If you're using Microsoft Developer Studio 5.0 to produce
- * Win32 stuff, it might be defined by:
- *
- * #define CK_PTR *
- *
- * If you're using an earlier version of Microsoft Developer
- * Studio to produce Win16 stuff, it might be defined by:
- *
- * #define CK_PTR far *
- *
- * In a typical UNIX environment, it might be defined by:
- *
- * #define CK_PTR *
- *
- *
- * 2. CK_DECLARE_FUNCTION(returnType, name): A macro which makes
- * an importable Cryptoki library function declaration out of a
- * return type and a function name.  It should be used in the
- * following fashion:
- *
- * extern CK_DECLARE_FUNCTION(CK_RV, C_Initialize)(
- *   CK_VOID_PTR pReserved
- * );
- *
- * If you're using Microsoft Developer Studio 5.0 to declare a
- * function in a Win32 Cryptoki .dll, it might be defined by:
- *
- * #define CK_DECLARE_FUNCTION(returnType, name) \
- *   returnType __declspec(dllimport) name
- *
- * If you're using an earlier version of Microsoft Developer
- * Studio to declare a function in a Win16 Cryptoki .dll, it
- * might be defined by:
- *
- * #define CK_DECLARE_FUNCTION(returnType, name) \
- *   returnType __export _far _pascal name
- *
- * In a UNIX environment, it might be defined by:
- *
- * #define CK_DECLARE_FUNCTION(returnType, name) \
- *   returnType name
- *
- *
- * 3. CK_DECLARE_FUNCTION_POINTER(returnType, name): A macro
- * which makes a Cryptoki API function pointer declaration or
- * function pointer type declaration out of a return type and a
- * function name.  It should be used in the following fashion:
- *
- * // Define funcPtr to be a pointer to a Cryptoki API function
- * // taking arguments args and returning CK_RV.
- * CK_DECLARE_FUNCTION_POINTER(CK_RV, funcPtr)(args);
- *
- * or
- *
- * // Define funcPtrType to be the type of a pointer to a
- * // Cryptoki API function taking arguments args and returning
- * // CK_RV, and then define funcPtr to be a variable of type
- * // funcPtrType.
- * typedef CK_DECLARE_FUNCTION_POINTER(CK_RV, funcPtrType)(args);
- * funcPtrType funcPtr;
- *
- * If you're using Microsoft Developer Studio 5.0 to access
- * functions in a Win32 Cryptoki .dll, in might be defined by:
- *
- * #define CK_DECLARE_FUNCTION_POINTER(returnType, name) \
- *   returnType __declspec(dllimport) (* name)
- *
- * If you're using an earlier version of Microsoft Developer
- * Studio to access functions in a Win16 Cryptoki .dll, it might
- * be defined by:
- *
- * #define CK_DECLARE_FUNCTION_POINTER(returnType, name) \
- *   returnType __export _far _pascal (* name)
- *
- * In a UNIX environment, it might be defined by:
- *
- * #define CK_DECLARE_FUNCTION_POINTER(returnType, name) \
- *   returnType (* name)
- *
- *
- * 4. CK_CALLBACK_FUNCTION(returnType, name): A macro which makes
- * a function pointer type for an application callback out of
- * a return type for the callback and a name for the callback.
- * It should be used in the following fashion:
- *
- * CK_CALLBACK_FUNCTION(CK_RV, myCallback)(args);
- *
- * to declare a function pointer, myCallback, to a callback
- * which takes arguments args and returns a CK_RV.  It can also
- * be used like this:
- *
- * typedef CK_CALLBACK_FUNCTION(CK_RV, myCallbackType)(args);
- * myCallbackType myCallback;
- *
- * If you're using Microsoft Developer Studio 5.0 to do Win32
- * Cryptoki development, it might be defined by:
- *
- * #define CK_CALLBACK_FUNCTION(returnType, name) \
- *   returnType (* name)
- *
- * If you're using an earlier version of Microsoft Developer
- * Studio to do Win16 development, it might be defined by:
- *
- * #define CK_CALLBACK_FUNCTION(returnType, name) \
- *   returnType _far _pascal (* name)
- *
- * In a UNIX environment, it might be defined by:
- *
- * #define CK_CALLBACK_FUNCTION(returnType, name) \
- *   returnType (* name)
- *
- *
- * 5. NULL_PTR: This macro is the value of a NULL pointer.
- *
- * In any ANSI/ISO C environment (and in many others as well),
- * this should best be defined by
- *
- * #ifndef NULL_PTR
- * #define NULL_PTR 0
- * #endif
- */
+module pkcs11;
 
 
-/* All the various Cryptoki types and #define'd values are in the
- * file pkcs11t.h.
- */
-#include "pkcs11t.h"
+public import pkcs11.pkcs11t;
+public import pkcs11.pkcs11f;
 
-#define __PASTE(x,y)      x##y
+// PKCS11_DYNAMIC_BINDING_ONE / PKCS11_DYNAMIC_BINDING_MULTIPLE are mutual exclusive !
+version(     PKCS11_DYNAMIC_BINDING_ONE)
+	version=PKCS11_DYNAMIC_BINDING;
+else version(PKCS11_DYNAMIC_BINDING_MULTIPLE)
+	version=PKCS11_DYNAMIC_BINDING;
 
+// only version(PKCS11_DYNAMIC_BINDING) needs compiling
+version(PKCS11_DYNAMIC_BINDING) {
 
-/* ==============================================================
- * Define the "extern" form of all the entry points.
- * ==============================================================
- */
+	version(PKCS11_OPENSC_SPY) enum PKCS11_OPENSC_SPY = true;
+	else                       enum PKCS11_OPENSC_SPY = false;
 
-#define CK_NEED_ARG_LIST  1
-#define CK_PKCS11_FUNCTION_INFO(name) \
-  extern CK_DECLARE_FUNCTION(CK_RV, name)
+	private {
+		import std.exception : enforce;
+		import derelict.util.exception,
+					 derelict.util.loader,
+					 derelict.util.system;
 
-/* pkcs11f.h has all the information about the Cryptoki
- * function prototypes.
- */
-#include "pkcs11f.h"
+		static if (Derelict_OS_Windows) {
+			static if (PKCS11_OPENSC_SPY)
+				enum libNames = "pkcs11-spy.dll";
+			else
+				enum libNames = "opensc-pkcs11.dll";
+		}
+		else static if( Derelict_OS_Mac ) {
+			static if (PKCS11_OPENSC_SPY)
+				enum libNames = "pkcs11-spy.dylib";
+			else
+				enum libNames = "opensc-pkcs11.dylib";
+		}
+		else static if( Derelict_OS_Posix ) {
+			static if (PKCS11_OPENSC_SPY)
+				enum libNames = "pkcs11-spy.so";
+			else
+				enum libNames = "opensc-pkcs11.so"; // onepin-opensc-pkcs11.so ?
+		}
+		else
+			static assert( 0, "Need to implement PKCS11 libNames for this operating system." );
+	}
 
-#undef CK_NEED_ARG_LIST
-#undef CK_PKCS11_FUNCTION_INFO
+	class PKCS11Loader : SharedLibLoader {
 
+		public this() {
+			super( libNames );
+		}
 
-/* ==============================================================
- * Define the typedef form of all the entry points.  That is, for
- * each Cryptoki function C_XXX, define a type CK_C_XXX which is
- * a pointer to that kind of function.
- * ==============================================================
- */
+		protected override void loadSymbols() {
+			bindFunc( cast(void**)&C_GetFunctionList,   "C_GetFunctionList");
 
-#define CK_NEED_ARG_LIST  1
-#define CK_PKCS11_FUNCTION_INFO(name) \
-  typedef CK_DECLARE_FUNCTION_POINTER(CK_RV, __PASTE(CK_,name))
+		// Try to use C_GetFunctionList; an error implies, the library is not usable
+			CK_FUNCTION_LIST_PTR  pFunctionList;
+			enforce(C_GetFunctionList(&pFunctionList) == CKR_OK);
 
-/* pkcs11f.h has all the information about the Cryptoki
- * function prototypes.
- */
-#include "pkcs11f.h"
+			C_Initialize           = pFunctionList.C_Initialize;
+			C_Finalize             = pFunctionList.C_Finalize;
+			C_GetInfo              = pFunctionList.C_GetInfo;
+//		C_GetFunctionList      = pFunctionList.C_GetFunctionList;
+			C_GetSlotList          = pFunctionList.C_GetSlotList;
+			C_GetSlotInfo          = pFunctionList.C_GetSlotInfo;
+			C_GetTokenInfo         = pFunctionList.C_GetTokenInfo;
+			C_GetMechanismList     = pFunctionList.C_GetMechanismList;
+			C_GetMechanismInfo     = pFunctionList.C_GetMechanismInfo;
+			C_InitToken            = pFunctionList.C_InitToken;
+			C_InitPIN              = pFunctionList.C_InitPIN;
+			C_SetPIN               = pFunctionList.C_SetPIN;
+			C_OpenSession          = pFunctionList.C_OpenSession;
+			C_CloseSession         = pFunctionList.C_CloseSession;
+			C_CloseAllSessions     = pFunctionList.C_CloseAllSessions;
+			C_GetSessionInfo       = pFunctionList.C_GetSessionInfo;
+			C_GetOperationState    = pFunctionList.C_GetOperationState;
+			C_SetOperationState    = pFunctionList.C_SetOperationState;
+			C_Login                = pFunctionList.C_Login;
+			C_Logout               = pFunctionList.C_Logout;
+			C_CreateObject         = pFunctionList.C_CreateObject;
+			C_CopyObject           = pFunctionList.C_CopyObject;
+			C_DestroyObject        = pFunctionList.C_DestroyObject;
+			C_GetObjectSize        = pFunctionList.C_GetObjectSize;
+			C_GetAttributeValue    = pFunctionList.C_GetAttributeValue;
+			C_SetAttributeValue    = pFunctionList.C_SetAttributeValue;
+			C_FindObjectsInit      = pFunctionList.C_FindObjectsInit;
+			C_FindObjects          = pFunctionList.C_FindObjects;
+			C_FindObjectsFinal     = pFunctionList.C_FindObjectsFinal;
+			C_EncryptInit          = pFunctionList.C_EncryptInit;
+			C_Encrypt              = pFunctionList.C_Encrypt;
+			C_EncryptUpdate        = pFunctionList.C_EncryptUpdate;
+			C_EncryptFinal         = pFunctionList.C_EncryptFinal;
+			C_DecryptInit          = pFunctionList.C_DecryptInit;
+			C_Decrypt              = pFunctionList.C_Decrypt;
+			C_DecryptUpdate        = pFunctionList.C_DecryptUpdate;
+			C_DecryptFinal         = pFunctionList.C_DecryptFinal;
+			C_DigestInit           = pFunctionList.C_DigestInit;
+			C_Digest               = pFunctionList.C_Digest;
+			C_DigestUpdate         = pFunctionList.C_DigestUpdate;
+			C_DigestKey            = pFunctionList.C_DigestKey;
+			C_DigestFinal          = pFunctionList.C_DigestFinal;
+			C_SignInit             = pFunctionList.C_SignInit;
+			C_Sign                 = pFunctionList.C_Sign;
+			C_SignUpdate           = pFunctionList.C_SignUpdate;
+			C_SignFinal            = pFunctionList.C_SignFinal;
+			C_SignRecoverInit      = pFunctionList.C_SignRecoverInit;
+			C_SignRecover          = pFunctionList.C_SignRecover;
+			C_VerifyInit           = pFunctionList.C_VerifyInit;
+			C_Verify               = pFunctionList.C_Verify;
+			C_VerifyUpdate         = pFunctionList.C_VerifyUpdate;
+			C_VerifyFinal          = pFunctionList.C_VerifyFinal;
+			C_VerifyRecoverInit    = pFunctionList.C_VerifyRecoverInit;
+			C_VerifyRecover        = pFunctionList.C_VerifyRecover;
+			C_DigestEncryptUpdate  = pFunctionList.C_DigestEncryptUpdate;
+			C_DecryptDigestUpdate  = pFunctionList.C_DecryptDigestUpdate;
+			C_SignEncryptUpdate    = pFunctionList.C_SignEncryptUpdate;
+			C_DecryptVerifyUpdate  = pFunctionList.C_DecryptVerifyUpdate;
+			C_GenerateKey          = pFunctionList.C_GenerateKey;
+			C_GenerateKeyPair      = pFunctionList.C_GenerateKeyPair;
+			C_WrapKey              = pFunctionList.C_WrapKey;
+			C_UnwrapKey            = pFunctionList.C_UnwrapKey;
+			C_DeriveKey            = pFunctionList.C_DeriveKey;
+			C_SeedRandom           = pFunctionList.C_SeedRandom;
+			C_GenerateRandom       = pFunctionList.C_GenerateRandom;
+			C_GetFunctionStatus    = pFunctionList.C_GetFunctionStatus;
+			C_CancelFunction       = pFunctionList.C_CancelFunction;
+			C_WaitForSlotEvent     = pFunctionList.C_WaitForSlotEvent;
+		}
 
-#undef CK_NEED_ARG_LIST
-#undef CK_PKCS11_FUNCTION_INFO
+version(PKCS11_DYNAMIC_BINDING_MULTIPLE)
+		mixin CK_FUNCTION_LIST_FENTRIES;
+	} // class PKCS11Loader
 
+version(PKCS11_DYNAMIC_BINDING_ONE) {
 
-/* ==============================================================
- * Define structed vector of entry points.  A CK_FUNCTION_LIST
- * contains a CK_VERSION indicating a library's Cryptoki version
- * and then a whole slew of function pointers to the routines in
- * the library.  This type was declared, but not defined, in
- * pkcs11t.h.
- * ==============================================================
- */
+	__gshared PKCS11Loader PKCS11;
 
-#define CK_PKCS11_FUNCTION_INFO(name) \
-  __PASTE(CK_,name) name;
+	shared static this() {
+		PKCS11 = new PKCS11Loader();
+	}
 
-struct CK_FUNCTION_LIST {
-
-  CK_VERSION    version;  /* Cryptoki version */
-
-/* Pile all the function pointers into the CK_FUNCTION_LIST. */
-/* pkcs11f.h has all the information about the Cryptoki
- * function prototypes.
- */
-#include "pkcs11f.h"
-
-};
-
-#undef CK_PKCS11_FUNCTION_INFO
-
-
-#undef __PASTE
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* _PKCS11_H_ */
-
+	__gshared {
+		mixin CK_FUNCTION_LIST_FENTRIES;
+	}
+} // version(PKCS11_DYNAMIC_BINDING_ONE)
+} // version(PKCS11_DYNAMIC_BINDING)
