@@ -1,3 +1,7 @@
+# Build state
+
+[![Build Status](https://travis-ci.org/carblue/pkcs11.svg?branch=master)](https://travis-ci.org/carblue/pkcs11)
+
 pkcs11
 ======
 
