@@ -5,7 +5,7 @@
  * IMPLIED OR EXPRESS WARRANTY; there is no warranty of MERCHANTABILITY, FITNESS FOR A
  * PARTICULAR PURPOSE or NONINFRINGEMENT of the rights of others.
  */
-        
+
 /* Latest version of the specification:
  * http://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/pkcs11-base-v2.40.html
  */
@@ -19,9 +19,6 @@
 Written in the D programming language.
 For git maintenance (ensure at least one congruent line with originating C header):
 #define _PKCS11T_H_ 1
-
-Content covered by this file is ALL of header C/libopensc/asn1.h
-ALL extern(C) functions are exported from "libopensc.so|opensc.dll" binary, except those controlled by PATCH_LIBOPENSC_EXPORTS
 */
 
 module pkcs11.pkcs11t;
