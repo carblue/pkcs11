@@ -167,4 +167,10 @@ version(PKCS11_DYNAMIC_BINDING_ONE) {
 		mixin CK_FUNCTION_LIST_FENTRIES;
 	}
 } // version(PKCS11_DYNAMIC_BINDING_ONE)
+
+
+	unittest {
+		PKCS11.load("opensc-pkcs11.so");
+	}
+
 } // version(PKCS11_DYNAMIC_BINDING)

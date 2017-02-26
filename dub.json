@@ -19,7 +19,7 @@
 			"sourcePaths": ["deimos"],
 			"versions" : ["PKCS11_DYNAMIC_BINDING_ONE"],
 			"dependencies": {
-				"derelict-util": "~>3.0.0-alpha.1"
+				"derelict-util": "~>3.0.0-alpha.2"
 			}
 		},
 		{
@@ -28,7 +28,7 @@
 			"sourcePaths": ["deimos"],
 			"versions" : ["PKCS11_DYNAMIC_BINDING_ONE"],
 			"dependencies": {
-				"derelict-util": "~>3.0.0-alpha.1"
+				"derelict-util": "~>3.0.0-alpha.2"
 			}
 		}
 	]
