@@ -12,6 +12,7 @@ configuration 'deimos': Static binding, the "import-only" C header's declaration
 configuration 'derelict': Dynamic binding (DerelictUtil), the header's declarations + derelict runtime loading (any pkcs#11 implementing shared library(s)) interface.
 
 With configuration 'derelict', the version identifier PKCS11_DYNAMIC_BINDING_ONE is set as default by dub.json, meaning, that connecting to exactly one only PKCS#11 implementing library is as easy as shown in the code snippet below. In the one-library-case, You won't have to deal with the CK_FUNCTION_LIST_PTR. There is also version identifier PKCS11_DYNAMIC_BINDING_MULTIPLE for cases, where multiple/different PKCS#11 libraries will be used by an application.
+Version identifier P11KIT may be used with PKCS11_DYNAMIC_BINDING_ONE, i.a. to select the PKCS#11 implementing library via the p11-kit configuration.
 
 For more information on dynamic binding and Your options with derelict-util, look at  {4 Derelict}.<br>
 Here's some sample code:

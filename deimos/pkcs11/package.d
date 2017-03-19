@@ -6,7 +6,7 @@
  * IMPLIED OR EXPRESS WARRANTY; there is no warranty of MERCHANTABILITY, FITNESS FOR A
  * PARTICULAR PURPOSE or NONINFRINGEMENT of the rights of others.
  */
-        
+
 /* Latest version of the specification:
  * http://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/pkcs11-base-v2.40.html
  */
@@ -46,27 +46,39 @@ version(PKCS11_DYNAMIC_BINDING) {
 					 derelict.util.loader,
 					 derelict.util.system;
 
-		static if (Derelict_OS_Windows) {
-			static if (PKCS11_OPENSC_SPY)
-				enum libNames = "pkcs11-spy.dll";
+		version(P11KIT) { // use highest priority pkcs#11 module as configured by p11-kit
+			static if (Derelict_OS_Windows)
+				enum libNames = "libp11-kit.dll";
+			else static if( Derelict_OS_Mac )
+				enum libNames = "libp11-kit.dylib";
+			else static if( Derelict_OS_Posix )
+				enum libNames = "libp11-kit.so";
 			else
-				enum libNames = "opensc-pkcs11.dll";
+				static assert( 0, "Need to implement PKCS11 libNames for this operating system." );
 		}
-		else static if( Derelict_OS_Mac ) {
-			static if (PKCS11_OPENSC_SPY)
-				enum libNames = "pkcs11-spy.dylib";
+		else {
+			static if (Derelict_OS_Windows) {
+				static if (PKCS11_OPENSC_SPY)
+					enum libNames = "pkcs11-spy.dll";
+				else
+					enum libNames = "opensc-pkcs11.dll";
+			}
+			else static if( Derelict_OS_Mac ) {
+				static if (PKCS11_OPENSC_SPY)
+					enum libNames = "pkcs11-spy.dylib";
+				else
+					enum libNames = "opensc-pkcs11.dylib";
+			}
+			else static if( Derelict_OS_Posix ) {
+				static if (PKCS11_OPENSC_SPY)
+					enum libNames = "pkcs11-spy.so";
+				else
+					enum libNames = "opensc-pkcs11.so"; // onepin-opensc-pkcs11.so ?
+			}
 			else
-				enum libNames = "opensc-pkcs11.dylib";
+				static assert( 0, "Need to implement PKCS11 libNames for this operating system." );
 		}
-		else static if( Derelict_OS_Posix ) {
-			static if (PKCS11_OPENSC_SPY)
-				enum libNames = "pkcs11-spy.so";
-			else
-				enum libNames = "opensc-pkcs11.so"; // onepin-opensc-pkcs11.so ?
-		}
-		else
-			static assert( 0, "Need to implement PKCS11 libNames for this operating system." );
-	}
+	} // private
 
 	class PKCS11Loader : SharedLibLoader {
 
@@ -80,6 +92,8 @@ version(PKCS11_DYNAMIC_BINDING) {
 		// Try to use C_GetFunctionList; an error implies, the library is not usable
 			CK_FUNCTION_LIST_PTR  pFunctionList;
 			enforce(C_GetFunctionList(&pFunctionList) == CKR_OK);
+version(PKCS11_DYNAMIC_BINDING_ONE)
+			m_function_list_ptr    = pFunctionList;
 
 			C_Initialize           = pFunctionList.C_Initialize;
 			C_Finalize             = pFunctionList.C_Finalize;
@@ -151,13 +165,20 @@ version(PKCS11_DYNAMIC_BINDING) {
 			C_WaitForSlotEvent     = pFunctionList.C_WaitForSlotEvent;
 		}
 
+version(PKCS11_DYNAMIC_BINDING_ONE) {
+	__gshared CK_FUNCTION_LIST_PTR  m_function_list_ptr;
+
+		// for (rare) cases, when it's required to pass the access to Cryptoki-functions
+		@property __gshared CK_FUNCTION_LIST_PTR function_list_ptr() {
+			return m_function_list_ptr;
+		}
+}
 version(PKCS11_DYNAMIC_BINDING_MULTIPLE)
 		mixin CK_FUNCTION_LIST_FENTRIES;
 	} // class PKCS11Loader
 
 version(PKCS11_DYNAMIC_BINDING_ONE) {
-
-	__gshared PKCS11Loader PKCS11;
+	__gshared PKCS11Loader          PKCS11;
 
 	shared static this() {
 		PKCS11 = new PKCS11Loader();
@@ -171,6 +192,12 @@ version(PKCS11_DYNAMIC_BINDING_ONE) {
 
 	unittest {
 		PKCS11.load("opensc-pkcs11.so");
+version(PKCS11_DYNAMIC_BINDING_ONE) {
+		// the following usage of function_list_ptr is not necessary in regular use cases; here only for testing purpose of @property function
+		auto  p = PKCS11.function_list_ptr;
+		p.C_Initialize(null);
+		p.C_Finalize(null);
+}
 	}
 
 } // version(PKCS11_DYNAMIC_BINDING)
