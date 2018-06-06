@@ -40,7 +40,7 @@ Here's some sample code:
 
 [1 PKCS#11](http://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/pkcs11-base-v2.40.html)<br>
 [2 PKCS#11 headers](http://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/errata01/os/include/pkcs11-v2.40/)<br>
-[3 PKCS#11 programming intro](https://www.nlnetlabs.nl/downloads/publications/hsm/hsm_node9.html)<br>
+[3 PKCS#11 programming intro](https://www.nlnetlabs.nl/downloads/publications/hsm/hsm.pdf)<br>
 [4 Derelict](http://derelictorg.github.io/overview/)<br>
 [5 OpenSC, opensc.conf/debug/debug_file, inspect (high-level) Cryptoki communication](https://github.com/OpenSC/OpenSC/wiki/Using-OpenSC)<br>
 [(6 Inspect (low-level) PC/SC communication)](http://ludovicrousseau.blogspot.de/2011/11/pcsc-api-spy-third-try.html)
