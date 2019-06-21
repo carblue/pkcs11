@@ -22,10 +22,10 @@ Here's some sample code:
 	// configuration 'derelict'
 	import std.stdio;
 	import pkcs11;
-	
+
 	int main() {
 		PKCS11.load(); // uses default library: opensc-pkcs11.so/.dll {5 OpenSC}, or do specify explicitely
-	
+
 		CK_RV rv;
 		if ((rv=C_Initialize(null)) != CKR_OK) {
 			writeln("Failed to initialze Cryptoki");
@@ -33,7 +33,7 @@ Here's some sample code:
 		}
 		scope(exit)
 			C_Finalize(NULL_PTR);
-	
+
 		...
 	}
 
@@ -44,3 +44,8 @@ Here's some sample code:
 [4 Derelict](http://derelictorg.github.io/overview/)<br>
 [5 OpenSC, opensc.conf/debug/debug_file, inspect (high-level) Cryptoki communication](https://github.com/OpenSC/OpenSC/wiki/Using-OpenSC)<br>
 [(6 Inspect (low-level) PC/SC communication)](http://ludovicrousseau.blogspot.de/2011/11/pcsc-api-spy-third-try.html)
+
+Not yet covered: v3.0<br>
+[7 PKCS#11](http://docs.oasis-open.org/pkcs11/pkcs11-base/v3.0/pkcs11-base-v3.0.html)<br>
+[8 PKCS#11 headers](https://docs.oasis-open.org/pkcs11/pkcs11-base/v3.0/csprd01/include/pkcs11-v3.0/)<br>
+

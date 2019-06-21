@@ -2,7 +2,7 @@
 	"name": "pkcs11",
 	"description": "Twofold (deimos/derelict) binding to PKCS #11 Cryptoki interface",
 	"license": "LGPL-2.1",
-	"copyright": "Copyright © 2017, Carsten Blüggel",
+	"copyright": "Copyright © 2017-2019, Carsten Blüggel",
 	"authors": ["Carsten Blüggel"],
 	"homepage": "https://github.com/carblue/pkcs11",
 	"importPaths": ["deimos"],
@@ -19,7 +19,7 @@
 			"sourcePaths": ["deimos"],
 			"versions" : ["PKCS11_DYNAMIC_BINDING_ONE"],
 			"dependencies": {
-				"derelict-util": "~>3.0.0-alpha.2"
+				"derelict-util": "~>3.0.0-beta.2"
 			}
 		},
 		{
@@ -28,7 +28,7 @@
 			"sourcePaths": ["deimos"],
 			"versions" : ["PKCS11_DYNAMIC_BINDING_ONE"],
 			"dependencies": {
-				"derelict-util": "~>3.0.0-alpha.2"
+				"derelict-util": "~>3.0.0-beta.2"
 			}
 		}
 	]

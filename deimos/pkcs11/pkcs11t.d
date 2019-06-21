@@ -157,29 +157,29 @@ struct CK_TOKEN_INFO {
 /* The flags parameter is defined as follows:
  *      Bit Flag                    Mask        Meaning
  */
-enum CKF_RNG                     = 0x00000001UL;  /* has random # generator */
-enum CKF_WRITE_PROTECTED         = 0x00000002UL;  /* token is write-protected */
-enum CKF_LOGIN_REQUIRED          = 0x00000004UL;  /* user must login */
-enum CKF_USER_PIN_INITIALIZED    = 0x00000008UL;  /* normal user's PIN is set */
+enum CKF_RNG                     = 0x0000_0001UL;  /* has random # generator */
+enum CKF_WRITE_PROTECTED         = 0x0000_0002UL;  /* token is write-protected */
+enum CKF_LOGIN_REQUIRED          = 0x0000_0004UL;  /* user must login */
+enum CKF_USER_PIN_INITIALIZED    = 0x0000_0008UL;  /* normal user's PIN is set */
 
 /* CKF_RESTORE_KEY_NOT_NEEDED.  If it is set,
  * that means that *every* time the state of cryptographic
  * operations of a session is successfully saved, all keys
  * needed to continue those operations are stored in the state
  */
-enum CKF_RESTORE_KEY_NOT_NEEDED  = 0x00000020UL;
+enum CKF_RESTORE_KEY_NOT_NEEDED  = 0x0000_0020UL;
 
 /* CKF_CLOCK_ON_TOKEN.  If it is set, that means
  * that the token has some sort of clock.  The time on that
  * clock is returned in the token info structure
  */
-enum CKF_CLOCK_ON_TOKEN          = 0x00000040UL;
+enum CKF_CLOCK_ON_TOKEN          = 0x0000_0040UL;
 
 /* CKF_PROTECTED_AUTHENTICATION_PATH.  If it is
  * set, that means that there is some way for the user to login
  * without sending a PIN through the Cryptoki library itself
  */
-enum CKF_PROTECTED_AUTHENTICATION_PATH = 0x00000100UL;
+enum CKF_PROTECTED_AUTHENTICATION_PATH = 0x0000_0100UL;
 
 /* CKF_DUAL_CRYPTO_OPERATIONS.  If it is true,
  * that means that a single session with the token can perform
@@ -187,7 +187,7 @@ enum CKF_PROTECTED_AUTHENTICATION_PATH = 0x00000100UL;
  * encrypt; decrypt and digest; sign and encrypt; and decrypt
  * and sign)
  */
-enum CKF_DUAL_CRYPTO_OPERATIONS  = 0x00000200UL;
+enum CKF_DUAL_CRYPTO_OPERATIONS  = 0x0000_0200UL;
 
 /* CKF_TOKEN_INITIALIZED. If it is true, the
  * token has been initialized using C_InitializeToken or an
@@ -195,62 +195,62 @@ enum CKF_DUAL_CRYPTO_OPERATIONS  = 0x00000200UL;
  * Calling C_InitializeToken when this flag is set will cause
  * the token to be reinitialized.
  */
-enum CKF_TOKEN_INITIALIZED       = 0x00000400UL;
+enum CKF_TOKEN_INITIALIZED       = 0x0000_0400UL;
 
 /* CKF_SECONDARY_AUTHENTICATION. If it is
  * true, the token supports secondary authentication for
  * private key objects.
  */
-enum CKF_SECONDARY_AUTHENTICATION  = 0x00000800UL;
+enum CKF_SECONDARY_AUTHENTICATION  = 0x0000_0800UL;
 
 /* CKF_USER_PIN_COUNT_LOW. If it is true, an
  * incorrect user login PIN has been entered at least once
  * since the last successful authentication.
  */
-enum CKF_USER_PIN_COUNT_LOW       = 0x00010000UL;
+enum CKF_USER_PIN_COUNT_LOW       = 0x0001_0000UL;
 
 /* CKF_USER_PIN_FINAL_TRY. If it is true,
  * supplying an incorrect user PIN will it to become locked.
  */
-enum CKF_USER_PIN_FINAL_TRY       = 0x00020000UL;
+enum CKF_USER_PIN_FINAL_TRY       = 0x0002_0000UL;
 
 /* CKF_USER_PIN_LOCKED. If it is true, the
  * user PIN has been locked. User login to the token is not
  * possible.
  */
-enum CKF_USER_PIN_LOCKED          = 0x00040000UL;
+enum CKF_USER_PIN_LOCKED          = 0x0004_0000UL;
 
 /* CKF_USER_PIN_TO_BE_CHANGED. If it is true,
  * the user PIN value is the default value set by token
  * initialization or manufacturing, or the PIN has been
  * expired by the card.
  */
-enum CKF_USER_PIN_TO_BE_CHANGED   = 0x00080000UL;
+enum CKF_USER_PIN_TO_BE_CHANGED   = 0x0008_0000UL;
 
 /* CKF_SO_PIN_COUNT_LOW. If it is true, an
  * incorrect SO login PIN has been entered at least once since
  * the last successful authentication.
  */
-enum CKF_SO_PIN_COUNT_LOW         = 0x00100000UL;
+enum CKF_SO_PIN_COUNT_LOW         = 0x0010_0000UL;
 
 /* CKF_SO_PIN_FINAL_TRY. If it is true,
  * supplying an incorrect SO PIN will it to become locked.
  */
-enum CKF_SO_PIN_FINAL_TRY         = 0x00200000UL;
+enum CKF_SO_PIN_FINAL_TRY         = 0x0020_0000UL;
 
 /* CKF_SO_PIN_LOCKED. If it is true, the SO
  * PIN has been locked. SO login to the token is not possible.
  */
-enum CKF_SO_PIN_LOCKED            = 0x00400000UL;
+enum CKF_SO_PIN_LOCKED            = 0x0040_0000UL;
 
 /* CKF_SO_PIN_TO_BE_CHANGED. If it is true,
  * the SO PIN value is the default value set by token
  * initialization or manufacturing, or the PIN has been
  * expired by the card.
  */
-enum CKF_SO_PIN_TO_BE_CHANGED     = 0x00800000UL;
+enum CKF_SO_PIN_TO_BE_CHANGED     = 0x0080_0000UL;
 
-enum CKF_ERROR_STATE              = 0x01000000UL;
+enum CKF_ERROR_STATE              = 0x0100_0000UL;
 
 alias CK_TOKEN_INFO * CK_TOKEN_INFO_PTR;
 
@@ -266,11 +266,11 @@ alias CK_SESSION_HANDLE * CK_SESSION_HANDLE_PTR;
 /* CK_USER_TYPE enumerates the types of Cryptoki users */
 alias CK_ULONG          CK_USER_TYPE;
 /* Security Officer */
-enum CKU_SO                  = 0UL;
+enum CK_USER_TYPE  CKU_SO                  = 0;
 /* Normal user */
-enum CKU_USER                = 1UL;
+enum CK_USER_TYPE  CKU_USER                = 1;
 /* Context specific */
-enum CKU_CONTEXT_SPECIFIC    = 2UL;
+enum CK_USER_TYPE  CKU_CONTEXT_SPECIFIC    = 2;
 
 /* CK_STATE enumerates the session states */
 alias CK_ULONG          CK_STATE;
@@ -1991,13 +1991,13 @@ struct CK_SEED_CBC_ENCRYPT_DATA_PARAMS {
 alias CK_SEED_CBC_ENCRYPT_DATA_PARAMS *  CK_SEED_CBC_ENCRYPT_DATA_PARAMS_PTR;
 
 struct CK_FUNCTION_LIST {
-	version (Windows) {
-		align(1) :
-		CK_VERSION  version_;  /* Cryptoki version */
-		mixin CK_FUNCTION_LIST_FENTRIES;
-	}
-	else {
-		CK_VERSION  version_;  /* Cryptoki version */
-		mixin CK_FUNCTION_LIST_FENTRIES;
-	}
+    version (Windows) {
+        align(1) :
+        CK_VERSION  version_;  /* Cryptoki version */
+        mixin CK_FUNCTION_LIST_FENTRIES;
+    }
+    else {
+        CK_VERSION  version_;  /* Cryptoki version */
+        mixin CK_FUNCTION_LIST_FENTRIES;
+    }
 }
